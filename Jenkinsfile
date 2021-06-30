@@ -1,14 +1,33 @@
-pipeline {
+pipeline
+{
     agent { label 'first'}
-    stages {
-        stage('scm') {
-            steps {
-                git 'https://github.com/Bharathandmia/spring-petclinic.git'        
+    
+    triggers{
+        cron('H * * * 1-5')
+    }   
+    stages{
+        
+        stage('SCM')
+        {
+            steps
+            {
+                git 'https://github.com/Bharathandmia/dev-qa-release.git'
             }
         }
-        stage('build') {
+        
+        stage('Build') {
             steps {
-                sh script: 'mvn clean package'
+                sh 'mvn clean package'
+            }
+        
+        }
+        
+        stage('post build')
+        {
+            steps{
+                junit 'gameoflife-web/target/surefire-reports/*.xml'
+                archiveArtifacts 'gameoflife-web/target/*.war'
+                
             }
         }
         
